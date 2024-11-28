@@ -1,0 +1,137 @@
+using System;
+using System.Collections.Generic;
+
+namespace StudentCourseManagement
+{
+    // Interface Tanımı
+    public interface IPerson
+    {
+        void Login();
+    }
+
+    // Temel Sınıf (Base Class)
+    public abstract class Person : IPerson
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string Email { get; set; }
+
+        public abstract void DisplayInfo(); // Polymorphism için abstract metot
+
+        public void Login()
+        {
+            Console.WriteLine($"{Name} logged in successfully.");
+        }
+    }
+
+    // Ogrenci Sınıfı
+    public class Student : Person
+    {
+        public List<Course> EnrolledCourses { get; set; } = new List<Course>();
+
+        public override void DisplayInfo()
+        {
+            Console.WriteLine($"Student ID: {Id}, Name: {Name}, Email: {Email}");
+            Console.WriteLine("Enrolled Courses:");
+            foreach (var course in EnrolledCourses)
+            {
+                Console.WriteLine($"- {course.CourseName} ({course.Credits} credits)");
+            }
+        }
+    }
+
+    // OgretimGorevlisi Sınıfı
+    public class Instructor : Person
+    {
+        public string Department { get; set; }
+        public List<Course> TaughtCourses { get; set; } = new List<Course>();
+
+        public override void DisplayInfo()
+        {
+            Console.WriteLine($"Instructor ID: {Id}, Name: {Name}, Email: {Email}, Department: {Department}");
+            Console.WriteLine("Taught Courses:");
+            foreach (var course in TaughtCourses)
+            {
+                Console.WriteLine($"- {course.CourseName} ({course.Credits} credits)");
+            }
+        }
+    }
+
+    // Ders (Course) Sınıfı
+    public class Course
+    {
+        public string CourseName { get; set; }
+        public int Credits { get; set; }
+        public Instructor Instructor { get; set; }
+        public List<Student> EnrolledStudents { get; set; } = new List<Student>();
+
+        public void DisplayCourseInfo()
+        {
+            Console.WriteLine($"Course: {CourseName}, Credits: {Credits}, Instructor: {Instructor.Name}");
+            Console.WriteLine("Enrolled Students:");
+            foreach (var student in EnrolledStudents)
+            {
+                Console.WriteLine($"- {student.Name}");
+            }
+        }
+    }
+
+    // Main Uygulama
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // Instructor Tanımlama
+            Instructor instructor1 = new Instructor
+            {
+                Id = 1,
+                Name = "Dr. Smith",
+                Email = "smith@university.com",
+                Department = "Computer Science"
+            };
+
+            // Ogrenci Tanımlama
+            Student student1 = new Student { Id = 1, Name = "Alice", Email = "alice@student.com" };
+            Student student2 = new Student { Id = 2, Name = "Bob", Email = "bob@student.com" };
+
+            // Ders Tanımlama
+            Course course1 = new Course
+            {
+                CourseName = "Programming 101",
+                Credits = 3,
+                Instructor = instructor1
+            };
+
+            Course course2 = new Course
+            {
+                CourseName = "Data Structures",
+                Credits = 4,
+                Instructor = instructor1
+            };
+
+            // Instructor'a Ders Atama
+            instructor1.TaughtCourses.Add(course1);
+            instructor1.TaughtCourses.Add(course2);
+
+            // Öğrencilere Ders Kayıtları
+            student1.EnrolledCourses.Add(course1);
+            student2.EnrolledCourses.Add(course2);
+
+            // Derslere Öğrenci Kayıtları
+            course1.EnrolledStudents.Add(student1);
+            course2.EnrolledStudents.Add(student2);
+
+            // Bilgi Gösterimi
+            Console.WriteLine("Instructor Info:");
+            instructor1.DisplayInfo();
+
+            Console.WriteLine("\nCourse Info:");
+            course1.DisplayCourseInfo();
+            course2.DisplayCourseInfo();
+
+            Console.WriteLine("\nStudent Info:");
+            student1.DisplayInfo();
+            student2.DisplayInfo();
+        }
+    }
+}
